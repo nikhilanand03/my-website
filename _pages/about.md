@@ -1,35 +1,68 @@
 ---
 layout: page
-title: Mediumish Template for Jekyll
 permalink: /about
-comments: true
+comments: false
 ---
 
 <div class="row justify-content-between">
-<div class="col-md-8 pr-5">
+  <div class="col-md-8 pr-5">
+    <p class="custom-text">Hi! I'm Nikhil, a student at IIT Madras. I'm interested in AI Research, and I was fortunate to do an internship at  <a href="https://research.adobe.com/" target="_blank">Adobe Research</a> in 2024 in the NLP team. I will join full-time as a Research Associate in 2025.</p>
+    <p class="custom-text">I'm doing my undergrad at <a href="https://www.iitm.ac.in/" target="_blank">IIT Madras</a> (BTech in Bioengineering and MTech in Data Science). During my internship at Adobe Research, I worked on using the internal states of LLMs to make them more faithful to the provided context, which I will be continuing for my final year thesis.</p>
+    <p class="custom-text">In my free time, I love to read, play the guitar, and <a href="https://www.instagram.com/nikhilanand_music/" target="_blank">sing</a>. I also play tennis and swim.</p>
+  </div>
+  <div class="col-md-4">
+    <img src="assets/images/pp.jpeg" alt="Nikhil Anand" class="img-fluid">
+    <div class="social-links mt-3 text-center">
+    <a href="https://www.linkedin.com/in/nikhilanand1303/" target="_blank"><i class="fab fa-linkedin"></i></a>
+    <a href="https://twitter.com/nikhilanand003" target="_blank"><i class="fab fa-twitter"></i></a>
+    <a href="https://github.com/nikhilanand03" target="_blank"><i class="fab fa-github"></i></a>
+    <a href="mailto:nikhilanandnj@gmail.com"><i class="fas fa-envelope"></i></a>
+    </div>
 
-<p>This website is built with Jekyll and Mediumish template! for Jekyll. It's for demonstration purposes, no real content can be found. Mediumish template for Jekyll is compatible with Github pages, in fact even this demo is created with Github Pages and hosted with Github.</p>
-
-<p class="mb-5"><img class="shadow-lg" src="{{site.baseurl}}/assets/images/mediumish-jekyll-template.png" alt="jekyll template mediumish" /></p>
-<h4>Documentation</h4>
-
-<p>Please, read the docs <a href="https://bootstrapstarter.com/bootstrap-templates/template-mediumish-bootstrap-jekyll/">here</a>.</p>
-
-<h4>Questions or bug reports?</h4>
-
-<p>Head over to our <a href="https://github.com/wowthemesnet/mediumish-theme-jekyll">Github repository</a>!</p>
-
+  </div>
+  
 </div>
 
-<div class="col-md-4">
+<style>
+  .custom-text {
+    font-size: 1.25rem;
+    /* font-family: 'Arial', sans-serif; */
+    font-family: 'Georgia', serif;
+    line-height: 1.6;
+  }
+  .social-links a {
+    font-size: 2rem;
+    margin-right: 15px;
+    color: #333;
+    text-decoration: none;
+  }
 
-<div class="sticky-top sticky-top-80">
-<h5>Buy me a coffee</h5>
+  .social-links a:hover {
+    color: #007bff;
+  }
 
-<p>Thank you for your support! Your donation helps me to maintain and improve <a target="_blank" href="https://github.com/wowthemesnet/mediumish-theme-jekyll">Mediumish <i class="fab fa-github"></i></a>.</p>
+  .text-center {
+    text-align: center; /* Centers the icons in the div */
+  }
+</style>
 
-<a target="_blank" href="https://www.wowthemes.net/donate/" class="btn btn-danger">Buy me a coffee</a> <a target="_blank" href="https://bootstrapstarter.com/bootstrap-templates/template-mediumish-bootstrap-jekyll/" class="btn btn-warning">Documentation</a>
-
+<!-- <div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-12 text-center mb-4">
+      <img src="assets/images/pp.jpeg" alt="Nikhil Anand" class="img-fluid custom-img">
+    </div>
+  </div>
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <p>Hi! I'm Nikhil, a student at IIT Madras. I'm interested in AI Research, and I was fortunate to do an internship at Adobe Research in 2024 in the NLP team. I will join full-time as a Research Associate in 2025.</p>
+      <p>I'm doing my undergrad at IIT Madras (BTech in Bioengineering and MTech in Data Science). My thesis is based on using Activation Steering to improve contextual faithfulness in LLMs.</p>
+    </div>
+  </div>
 </div>
-</div>
-</div>
+
+<style>
+  .custom-img {
+    max-width: 50%; /* Adjust as needed */
+    height: auto;
+  }
+</style> -->
