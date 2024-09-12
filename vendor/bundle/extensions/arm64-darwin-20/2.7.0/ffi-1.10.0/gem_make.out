@@ -1,0 +1,40 @@
+current directory: /Users/nikhilanand/my-website/vendor/bundle/gems/ffi-1.10.0/ext/ffi_c
+/opt/homebrew/opt/ruby@2.7/bin/ruby extconf.rb
+checking for ffi_call() in -lffi... yes
+checking for ffi_closure_alloc()... yes
+checking for ffi_raw_call()... yes
+checking for ffi_prep_raw_closure()... yes
+checking for shlwapi.h... no
+checking for ruby/thread.h... yes
+checking for rb_thread_blocking_region()... no
+checking for rb_thread_call_with_gvl()... yes
+checking for rb_thread_call_without_gvl()... yes
+checking for ffi_prep_cif_var()... yes
+creating extconf.h
+creating Makefile
+
+current directory: /Users/nikhilanand/my-website/vendor/bundle/gems/ffi-1.10.0/ext/ffi_c
+make DESTDIR\= sitearchdir\=./.gem.20240912-97675-142nvgy sitelibdir\=./.gem.20240912-97675-142nvgy clean
+
+current directory: /Users/nikhilanand/my-website/vendor/bundle/gems/ffi-1.10.0/ext/ffi_c
+make DESTDIR\= sitearchdir\=./.gem.20240912-97675-142nvgy sitelibdir\=./.gem.20240912-97675-142nvgy
+compiling AbstractMemory.c
+compiling ArrayType.c
+compiling Buffer.c
+compiling Call.c
+Call.c:412:20: error: incompatible function pointer types passing 'VALUE (void *)' (aka 'unsigned long (void *)') to parameter of type 'VALUE (*)(VALUE)' (aka 'unsigned long (*)(unsigned long)') [-Wincompatible-function-pointer-types]
+        rb_rescue2(rbffi_do_blocking_call, (VALUE) bc, rbffi_save_frame_exception, (VALUE) &frame, rb_eException, (VALUE) 0);
+                   ^~~~~~~~~~~~~~~~~~~~~~
+/opt/homebrew/Cellar/ruby@2.7/2.7.8_1/include/ruby-2.7.0/ruby/ruby.h:1990:25: note: passing argument to parameter here
+VALUE rb_rescue2(VALUE(*)(VALUE),VALUE,VALUE(*)(VALUE,VALUE),VALUE,...);
+                        ^
+Call.c:412:56: error: incompatible function pointer types passing 'VALUE (void *, VALUE)' (aka 'unsigned long (void *, unsigned long)') to parameter of type 'VALUE (*)(VALUE, VALUE)' (aka 'unsigned long (*)(unsigned long, unsigned long)') [-Wincompatible-function-pointer-types]
+        rb_rescue2(rbffi_do_blocking_call, (VALUE) bc, rbffi_save_frame_exception, (VALUE) &frame, rb_eException, (VALUE) 0);
+                                                       ^~~~~~~~~~~~~~~~~~~~~~~~~~
+/opt/homebrew/Cellar/ruby@2.7/2.7.8_1/include/ruby-2.7.0/ruby/ruby.h:1990:47: note: passing argument to parameter here
+VALUE rb_rescue2(VALUE(*)(VALUE),VALUE,VALUE(*)(VALUE,VALUE),VALUE,...);
+                                              ^
+2 errors generated.
+make: *** [Call.o] Error 1
+
+make failed, exit code 2
