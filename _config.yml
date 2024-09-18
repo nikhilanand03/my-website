@@ -15,11 +15,11 @@ permalink: /:title/
 authors:
   nikhil:
     name: Nikhil
-    display_name: Nikhil
-    gravatar: e56154546cf4be74e393c62d1ae9f9d4
+    display_name: Nikhil Anand
+    avatar: assets/images/pp_canada.jpeg
     email: nikhilanandnj@gmail.com
-    web: https://www.wowthemes.net
-    twitter: https://twitter.com/wowthemesnet
+    web: https://www.linkedin.com/in/nikhilanand1303/
+    twitter: https://twitter.com/nikhilanand003
     description: "Author of this site."
   
 # Plugins

@@ -11,7 +11,7 @@ comments: false
     <p class="custom-text">In my free time, I love to read, play the guitar, and <a href="https://www.instagram.com/nikhilanand_music/" target="_blank">sing</a>. I also play tennis and swim.</p>
   </div>
   <div class="col-md-4">
-    <img src="assets/images/pp.jpeg" alt="Nikhil Anand" class="img-fluid">
+    <img src="assets/images/pp_canada.jpeg" alt="Nikhil Anand" class="img-fluid">
     <div class="social-links mt-3 text-center">
     <a href="https://www.linkedin.com/in/nikhilanand1303/" target="_blank"><i class="fab fa-linkedin"></i></a>
     <a href="https://twitter.com/nikhilanand003" target="_blank"><i class="fab fa-twitter"></i></a>

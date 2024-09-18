@@ -33,6 +33,28 @@
 
 <script src="/assets/js/jquery.min.js"></script>
 
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
+
+<script>
+    MathJax = {
+        tex: {
+            inlineMath: [['$', '$'],['\\(','\\)']]
+        },
+        svg: {
+            fontCache: 'global'
+        }
+    };
+</script>
+
+<script src="mathjax-config.js" defer></script>
+
+<script type="text/javascript" id="MathJax-script" async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
+</script>
+
 </head>
 
 
@@ -156,7 +178,7 @@
 
 <!-- Bottom Alert Bar
 ================================================== -->
-<div class="alertbar">
+<!-- <div class="alertbar">
 	<div class="container text-center">
 		<span><img src="/assets/images/logo2.png" alt="Nikhil Anand"> &nbsp; Never miss a <b>story</b> from us, subscribe to our newsletter</span>
         <form action="https://wowthemes.us11.list-manage.com/subscribe/post?u=8aeb20a530e124561927d3bd8&amp;id=8c3d2d214b" method="post" name="mc-embedded-subscribe-form" class="wj-contact-form validate" target="_blank" novalidate>
@@ -169,7 +191,7 @@
 </div>
 
     
-</div>
+</div> -->
 
 <!-- Categories Jumbotron
 ================================================== -->
@@ -183,6 +205,8 @@
 		<div class="col-md-8 p-5 align-self-center text-center">
             
             
+                
+                    <a class="mt-1 mb-1" href="/categories#review">review (1)</a>
                 
             
             

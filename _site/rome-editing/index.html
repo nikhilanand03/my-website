@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<link rel="icon" href="/assets/images/logo2.png/">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<title>Where are facts stored in Large Language Models? | Nikhil Anand</title>
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Where are facts stored in Large Language Models? | Nikhil Anand</title>
+<meta name="generator" content="Jekyll v4.3.3" />
+<meta property="og:title" content="Where are facts stored in Large Language Models?" />
+<meta name="author" content="nikhil" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Brian Niccol became the CEO of Starbucks a few weeks ago. Unfortunately, our LLMs were trained much before this, so they might still think the CEO is Kevin Johnson. That begs the question, “How do we change facts in LLMs without retraining them every time?”, or perhaps an even deeper question, “Where are facts even stored in LLMs?”" />
+<meta property="og:description" content="Brian Niccol became the CEO of Starbucks a few weeks ago. Unfortunately, our LLMs were trained much before this, so they might still think the CEO is Kevin Johnson. That begs the question, “How do we change facts in LLMs without retraining them every time?”, or perhaps an even deeper question, “Where are facts even stored in LLMs?”" />
+<link rel="canonical" href="http://localhost:4000/rome-editing/" />
+<meta property="og:url" content="http://localhost:4000/rome-editing/" />
+<meta property="og:site_name" content="Nikhil Anand" />
+<meta property="og:image" content="http://localhost:4000/assets/images/hippocampus.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-09-14T00:00:00+05:30" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="http://localhost:4000/assets/images/hippocampus.png" />
+<meta property="twitter:title" content="Where are facts stored in Large Language Models?" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"nikhil"},"dateModified":"2024-09-14T00:00:00+05:30","datePublished":"2024-09-14T00:00:00+05:30","description":"Brian Niccol became the CEO of Starbucks a few weeks ago. Unfortunately, our LLMs were trained much before this, so they might still think the CEO is Kevin Johnson. That begs the question, “How do we change facts in LLMs without retraining them every time?”, or perhaps an even deeper question, “Where are facts even stored in LLMs?”","headline":"Where are facts stored in Large Language Models?","image":"http://localhost:4000/assets/images/hippocampus.png","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/rome-editing/"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/images/logo2.png"},"name":"nikhil"},"url":"http://localhost:4000/rome-editing/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    
+<link href="/assets/css/screen.css" rel="stylesheet">
+
+<link href="/assets/css/main.css" rel="stylesheet">
+
+<script src="/assets/js/jquery.min.js"></script>
+
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
+
+<script>
+    MathJax = {
+        tex: {
+            inlineMath: [['$', '$'],['\\(','\\)']]
+        },
+        svg: {
+            fontCache: 'global'
+        }
+    };
+</script>
+
+<script src="mathjax-config.js" defer></script>
+
+<script type="text/javascript" id="MathJax-script" async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
+</script>
+
+</head>
+
+
+
+
+<body class="layout-post">
+	<!-- defer loading of font and font awesome -->
+	<noscript id="deferred-styles">
+		<link href="https://fonts.googleapis.com/css?family=Righteous%7CMerriweather:300,300i,400,400i,700,700i" rel="stylesheet">
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+	</noscript>
+
+
+<!-- Begin Menu Navigation
+================================================== -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top mediumnavigation nav-down">
+
+    <div class="container pr-0">
+
+    <!-- Begin Logo -->
+    <a class="navbar-brand" href="/">
+        <img src="/assets/images/logo2.png/" alt="Nikhil Anand" style="width: 90px; height: auto;">
+    </a>
+    <!-- End Logo -->
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMediumish" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarMediumish">
+
+        <!-- Begin Menu -->
+
+            <ul class="navbar-nav ml-auto">
+
+                
+                <li class="nav-item">
+                
+                    <a class="nav-link" href="/about">About</a>
+                </li>
+
+                
+                <li class="nav-item">
+                
+                <a class="nav-link" href="/blogs">Blog</a>
+                </li>
+
+                <!--
+                <li class="nav-item">
+                <a target="_blank" class="nav-link" href="https://bootstrapstarter.com/bootstrap-templates/template-mediumish-bootstrap-jekyll/"> Docs</a>
+                </li>
+                
+                <li class="nav-item">
+                <a target="_blank" class="nav-link" href="https://www.wowthemes.net/themes/mediumish-wordpress/"><i class="fab fa-wordpress-simple"></i> WP Version</a>
+                </li>
+
+                <li class="nav-item">
+                <a target="_blank" class="nav-link" href="https://www.wowthemes.net/themes/mediumish-ghost/"><i class="fab fa-snapchat-ghost"></i> Ghost Version</a>
+                </li>
+
+                <li class="nav-item">
+                <a target="_blank" class="nav-link" href="https://github.com/wowthemesnet/mediumish-theme-jekyll"><i class="fab fa-github"></i> Fork on Github</a>
+                </li>
+                -->
+
+                <script src="/assets/js/lunr.js"></script>
+
+
+<style>
+    .lunrsearchresult .title {color: #d9230f;}
+    .lunrsearchresult .url {color: silver;}
+    .lunrsearchresult a {display: block; color: #777;}
+    .lunrsearchresult a:hover, .lunrsearchresult a:focus {text-decoration: none;}
+    .lunrsearchresult a:hover .title {text-decoration: underline;}
+</style>
+
+
+<form class="bd-search" onSubmit="return lunr_search(document.getElementById('lunrsearch').value);">
+    <input type="text" class="form-control text-small launch-modal-search" id="lunrsearch" name="q" maxlength="255" value="" placeholder="Type and enter..."/>
+</form>
+
+<div id="lunrsearchresults">
+    <ul></ul>
+</div>
+
+<script src="/assets/js/lunrsearchengine.js"></script>
+
+            </ul>
+
+        <!-- End Menu -->
+
+    </div>
+
+    </div>
+</nav>
+<!-- End Navigation
+================================================== -->
+
+
+<div class="site-content">
+
+<div class="container">
+
+<!-- Site Title
+================================================== -->
+<div class="mainheading">
+    <h1 class="sitetitle">Nikhil Anand</h1>
+    <p class="lead">
+        
+    </p>
+</div>
+
+<!-- Content
+================================================== -->
+<div class="main-content">
+    <!-- Begin Article
+================================================== -->
+<div class="container">
+    <div class="row">
+
+        <!-- Post Share -->
+        <div class="col-md-2 pl-0">
+            <div class="share sticky-top sticky-top-offset">
+    <p>
+        Share
+    </p>
+    <ul>
+        <li class="ml-1 mr-1">
+            <a target="_blank" href="https://twitter.com/intent/tweet?text=Where are facts stored in Large Language Models?&url=http://localhost:4000/rome-editing/" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                <i class="fab fa-twitter"></i>
+            </a>
+        </li>
+
+        <li class="ml-1 mr-1">
+            <a target="_blank" href="https://facebook.com/sharer.php?u=http://localhost:4000/rome-editing/" onclick="window.open(this.href, 'facebook-share', 'width=550,height=435');return false;">
+                <i class="fab fa-facebook-f"></i>
+            </a>
+        </li>
+
+        <li class="ml-1 mr-1">
+            <a target="_blank" href="https://www.linkedin.com/shareArticle?mini=true&url=http://localhost:4000/rome-editing/" onclick="window.open(this.href, 'width=550,height=435');return false;">
+                <i class="fab fa-linkedin-in"></i>
+            </a>
+        </li>
+
+    </ul>
+    
+    <div class="sep">
+    </div>
+    <ul>
+        <li>
+        <a class="small smoothscroll" href="#disqus_thread"></a>
+        </li>
+    </ul>
+    
+</div>
+
+        </div>
+
+        <!-- Post -->
+        
+
+        <div class="col-md-9 flex-first flex-md-unordered">
+            <div class="mainheading">
+
+                <!-- Author Box -->
+                
+                <div class="row post-top-meta">
+                    <div class="col-xs-12 col-md-3 col-lg-2 text-center text-md-left mb-4 mb-md-0">
+                        
+                        <img class="author-thumb" src="/assets/images/pp_canada.jpeg" alt="Nikhil Anand">
+                        
+                    </div>
+                    <div class="col-xs-12 col-md-9 col-lg-10 text-center text-md-left">
+                        <a target="_blank" class="link-dark" href="https://www.linkedin.com/in/nikhilanand1303/">Nikhil Anand</a><a target="_blank" href="https://twitter.com/nikhilanand003" class="btn follow">Follow</a>
+                        <span class="author-description">Author of this site.</span>
+                    </div>
+                </div>
+                
+
+                <!-- Post Title -->
+                <h1 class="posttitle">Where are facts stored in Large Language Models?</h1>
+
+            </div>
+
+            <!-- Adsense if enabled from _config.yml (change your pub id and slot) -->
+            
+            <!-- End Adsense -->
+
+            <!-- Post Featured Image -->
+            
+
+            
+            <img class="featured-image img-fluid" src="/assets/images/hippocampus.png" alt="Where are facts stored in Large Language Models?">
+            
+
+            
+            <!-- End Featured Image -->
+
+            <!-- Post Content -->
+            <div class="article-post">
+                <!-- Toc if any -->
+                
+                <!-- End Toc -->
+                <p>Brian Niccol became the CEO of Starbucks a few weeks ago. Unfortunately, our LLMs were trained much before this, so they might still think the CEO is Kevin Johnson. That begs the question, “How do we change facts in LLMs without retraining them every time?”, or perhaps an even deeper question, “Where are facts even stored in LLMs?”</p>
+
+<p>In 2022, Kevin Meng et al. wrote the paper <a href="https://arxiv.org/abs/2202.05262">Locating and Editing Factual Associations in GPT</a>, detailing a method to identify where facts might be stored in LLMs and utilising this information to edit the facts in LLMs without any extra training. Note that training requires extensive GPU resources, so if we could edit facts just by changing a few weights, it would be faster and more resource-efficient.</p>
+
+<p>To figure out how to “edit” these LLMs, Meng et al. attempt to find out where the LLM stores these facts through Causal Mediation Analysis. In this blog, we’ll go over how to apply causal mediation analysis to LLMs to understand the functions of an LLM’s components. In particular, we’ll see how to use it to locate the fact storage sites in an LLM.</p>
+
+<h3 id="a-recap-of-llm-architecture">A Recap of LLM Architecture</h3>
+
+<p>If you don’t know how transformers work, I’d recommend going over <a href="https://jalammar.github.io/illustrated-transformer/">Jay Allamar’s blog post</a> “The Illustrated Transformer”, explaining how a transformer works in detail.</p>
+
+<p>Let’s assume $h_i^{(0)}$ is the hidden state before entering the transformer’s first layer. So, we can represent it as the sum of the embedded input vector and the positional embeddings of the input.</p>
+
+<div style="text-align: center; font-size: 30px">
+ $$h_i^{(0)} = emb(x_i) + pos(i)$$
+</div>
+
+<p>We add the attention layer output and the MLP layer output to the previous residual stream vector at every layer.</p>
+
+<div style="text-align: center;">
+    <img src="../assets/images/recurring_layer_equn.png" alt="drawing" width="430" />
+</div>
+
+<p>Here’s a simplified visualisation of a single layer in the transformer network. We can see that the previous layer’s hidden state for the token $i$ is denoted as $h_i^{(l-1)}$. This is inputted into the MLP layer (Multi-Layer Perceptron) to get $m_i^{(l)}$. This is added back into the hidden state (aka the residual stream), which is then passed into the attention block. The output from the attention block then goes back into the residual stream to get the hidden state of the current layer. This goes into the next layer, and the process repeats similarly.</p>
+
+<div style="text-align: center">
+    <img src="../assets/images/visual_layer2.png" alt="drawing" width="700" />
+</div>
+
+<p>We left out some details here, but that’s the gist.</p>
+
+<h3 id="where-are-the-facts-stored-in-llms">Where are the facts stored in LLMs?</h3>
+
+<p>Now we start by attempting to locate where in LLMs facts are stored through a method called <strong>Causal Mediation Analysis</strong>. To implement this, we need to perform three runs: a clean run, a corrupted run, and a corrupted-with-restoration run.</p>
+
+<div style="text-align: center">
+    <img src="../assets/images/3runs2.png" alt="drawing" width="500" />
+</div>
+
+<h4 id="1-clean-run">1. Clean run</h4>
+
+<p>Since the goal is to understand mechanisms of factual retrieval in LLMs, we provide an input string and ask the LLM to predict the next token representing a fact. For example, we may provide the string “Space Needle is located in the city of”, after which we expect GPT to output “Seattle”. In the clean run, no modifications were made to the LLM. The input is passed into the LLM, which predicts the next token. We’ll assume there are $T$ tokens in the input.</p>
+
+<div style="text-align: center">
+    <img src="../assets/images/cleanrun.png" alt="drawing" width="500" />
+</div>
+
+<p>The diagram shows that the input is passed into the embedder to get the embedded input, as we saw in equation (1). Then, the input is passed through several MLP and Attention layers (as we saw in equation (2)). Finally, the LLM predicts the next token by unembedding the last hidden state. Since the run is clean, the output is not affected, and the factually correct output is expected (“Seattle”).</p>
+
+<h4 id="2-corrupted-run">2. Corrupted run</h4>
+
+<p>In the second run, we run the same input into the embedder, but we corrupt all tokens by adding some number $\epsilon$ to each token’s vector. We can see the summary in the below diagram. Note that since all future hidden states depend on the earlier layer, corruption of the earlier layer causes all the later hidden states to be changed. We denote the corrupted hidden states by $h_i^{*(l)}$ for token $i$ and layer $l$.</p>
+
+<div style="text-align: center">
+    <img src="../assets/images/corrupted_run4.png" alt="drawing" width="550" />
+</div>
+
+<p>Due to the corruption of the embeddings before entering the first transformer layer, the output token is likely <strong>incorrect</strong>. It could be not meaningful or meaningful but not factually correct, depending on the value of $\epsilon$ (how strong the perturbation is). For example, the above diagram shows a meaningless output, “cro”.</p>
+
+<h4 id="3-corrupted-with-restoration-run">3. Corrupted-with-restoration run</h4>
+
+<p>In the third run, we perform the corrupted run just like before, but we restore one specific token position at a particular layer (“corrupted with restoration”). Note that every other token in that layer remains corrupted.</p>
+
+<p>If this restoration, followed by a forward pass, leads to the correct answer, then the specific layer and token position we restored had some significance in determining the answer.</p>
+
+<div style="text-align: center">
+    <img src="../assets/images/corrupted_restoration3.png" alt="drawing" width="550" />
+</div>
+
+<h4 id="total-effect">Total Effect</h4>
+
+<p>Let’s consider our example: “Space Needle is located in the city of Seattle”.</p>
+
+<p>So, the expected output is “Seattle”.</p>
+
+<div style="text-align: center; font-size: 30px">
+ $$o = \text {'Seattle'}$$
+</div>
+
+<p>We define the Total Effect (TE) as:</p>
+
+<div style="text-align: center; font-size: 30px">
+ $$\text{TE} = I\kern-0.3emP_*[o] - I\kern-0.3emP[o]$$
+</div>
+
+<p>Here, $I\kern-0.3emP[o]$ represents the final token probability for the “Seattle” token in the clean run, while $I\kern-0.3emP_*[o]$ represents the probability for the “Seattle” token during the corrupted run. If it is high, we expect the LLM to output “Seattle”; if it is low, we expect the LLM to output a different token. For example, without corruption, “Seattle” may have a probability of 90%, but with corruption, its probability drops to 30%. Thus, we see that TE = ; therefore, corruption had a huge “Total Effect”.</p>
+
+<div style="text-align: center">
+    <img src="../assets/images/total_effect.png" alt="drawing" width="750" />
+</div>
+
+<h4 id="indirect-effect">Indirect Effect</h4>
+
+<p>We define the indirect effect of a specific layer $\hat{l}$ and token $\hat{i}$ as:</p>
+
+<div style="text-align: center; font-size: 30px">
+ $$\text{IE} = I\kern-0.3emP_{*,\text{clean $h_i^{(l)}$}}[o] - I\kern-0.3emP_*[o]$$
+</div>
+
+<p>Here, $I\kern-0.3emP_{*,\text{clean $h_i^{(l)}$}}[o]$ represents the final token probability for the “Seattle” token in the corrupted-with-restoration run, where $h_i^{(l)}$ is the restored hidden state. For example, if after corruption, the probability of “Seattle” is now 30%, but after restoring a specific layer and a specific token hidden state, the probability jumps to 50%, then that particular layer and token position has an indirect effect of 20%.</p>
+
+<div style="text-align: center">
+    <img src="../assets/images/indirect_effec.png" alt="drawing" width="750" />
+</div>
+
+<h4 id="average-total-effect-ate-and-average-indirect-effect-aie">Average Total Effect (ATE) and Average Indirect Effect (AIE)</h4>
+
+<p>Now, we want to see which locations in the model are responsible for remembering facts in general rather than specific facts. So, we average the total effect and indirect effects across several statements.</p>
+
+<div style="border-left: 4px solid #007bff; background-color: #f1f8ff; padding: 10px; margin-bottom: 16px; font-family: 'Comic Sans MS', cursive; font-size: 18px">
+  <li>The larger the <strong>Average Total Effect</strong>, the more the corruption <strong>degraded</strong> the output.</li>
+
+  <li>The larger the <strong>Average Indirect Effect</strong>, the more the restoration of a specific hidden state <strong>improved</strong> the output, and the more <strong>important</strong> that hidden state is.</li>
+</div>
+
+<h4 id="so-what-were-the-results">So what were the results?</h4>
+
+<p>The paper found that the Average Total Effect was 18.6% after corruption.</p>
+
+<div style="text-align: center; font-size: 30px;">
+ $$\text{ATE} = 18.6\%$$
+</div>
+
+<p>However, they also noticed that specific hidden states mediated much of this effect. For instance, the Average Indirect Effect of the <strong>last subject token</strong> at <strong>layer 15</strong> was 8.7%. The subject in our example is “Space Needle”, and the last token is “le”. So, the hidden state at this token, in layer 15, holds the largest share of the Total Effect across all hidden states.</p>
+
+<div style="border-left: 4px solid #007bff; background-color: #f1f8ff; padding: 10px; margin-bottom: 16px; font-family: 'Comic Sans MS', cursive; font-size: 18px">
+  In English, the subject of the sentence refers to the person, place or thing that performs the action in the sentence, usually placed before the verb.
+</div>
+
+<h4 id="separating-contributions-of-mlp-and-attention-layers">Separating contributions of MLP and Attention layers</h4>
+
+<p>They did further causal analysis to understand whether the MLP layers are more critical for factual storage or the attention layers. To do this, they perform a corrupted-with-restoration run where, after corruption of the initial hidden states, they restore only the MLP hidden state $m_\hat{i}^{(\hat{l})}$ (or only the attention hidden state $a_\hat{i}^{(\hat{l})}$). They use this to find the Indirect Effect of each MLP or Attention block.</p>
+
+<div style="text-align: center; font-size: 30px">
+ $$(\text{AIE of MLP})_{max} = 6.6\%$$
+ $$(\text{AIE of Attn})_{max} = 1.6\%$$
+</div>
+
+<p>The maximum Average Indirect Effect at the last subject token was 6.6% for MLP layers and 1.6% for Attention layers. Note that here, we are sticking to the last subject token, but we are maximising the AIE value across layers. It is clear that <strong>MLP layers had a more significant causal effect than attention layers</strong>, and they concluded from this that the MLP layers at the last subject token had something to do with factual storage. Later on, they figured out an approach to editing facts within LLMs by focusing on MLP layers at the last subject token, but we’ll cover that in a later blog!</p>
+
+<h4 id="conclusion-and-limitations">Conclusion and Limitations</h4>
+
+<p>This approach, called Causal Mediation Analysis, helps determine which parts of an LLM are in charge of which tasks. Once we know the crucial sites for specific tasks, we can target those sites for doing that task better! For example, factual associations depended more significantly on MLP layers at the last subject token. While this is true, we can’t infer that the MLP layers exclusively take part in tasks involved in factual associations. We can assume that they have some role in the mechanism, though we don’t know their exact role or whether other parts are also crucial. During my next blog (on editing factual associations in LLMs), I’ll talk about the mechanism (per the paper’s hypothesis) and how they used it to edit facts and show actual results!</p>
+
+<h4 id="acknowledgements">Acknowledgements</h4>
+
+<p>The contents of this blog are from the paper <a href="https://arxiv.org/abs/2202.05262">Locating and Editing Factual Associations in GPT</a> by Kevin Meng et al. We mainly cover the aspects of ‘locating’ factual associations but leave out the ‘editing’ part for a later blog.</p>
+
+            </div>
+
+            <!-- Rating -->
+            
+
+            <!-- Post Date -->
+            <p>
+            <small>
+                <span class="post-date"><time class="post-date" datetime="2024-09-14">14 Sep 2024</time></span>           
+                
+                </small>
+            </p>
+
+            <!-- Post Categories -->
+            <div class="after-post-cats">
+                <ul class="tags mb-4">
+                    
+                    
+                    <li>
+                        <a class="smoothscroll" href="/categories#review">review</a>
+                    </li>
+                    
+                </ul>
+            </div>
+            <!-- End Categories -->
+
+            <!-- Post Tags -->
+            <div class="after-post-tags">
+                <ul class="tags">
+                    
+                    
+                </ul>
+            </div>
+            <!-- End Tags -->
+
+            <!-- Prev/Next -->
+            <div class="row PageNavigation d-flex justify-content-between font-weight-bold">
+            
+            
+            <div class="clearfix"></div>
+            </div>
+            <!-- End Categories -->
+
+        </div>
+        <!-- End Post -->
+
+    </div>
+</div>
+<!-- End Article
+================================================== -->
+
+<!-- Begin Comments
+================================================== -->
+
+    <div class="container">
+        <div id="comments" class="row justify-content-center mb-5">
+            <div class="col-md-8">
+                <section class="disqus">
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'demowebsite'; 
+        var disqus_developer = 0;
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = window.location.protocol + '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</section>
+
+            </div>
+        </div>
+    </div>
+
+<!--End Comments
+================================================== -->
+
+<!-- Review with LD-JSON, adapt it for your needs if you like, but make sure you test the generated HTML source code first: 
+https://search.google.com/structured-data/testing-tool/u/0/
+================================================== -->
+
+</div>
+
+
+<!-- Bottom Alert Bar
+================================================== -->
+<!-- <div class="alertbar">
+	<div class="container text-center">
+		<span><img src="/assets/images/logo2.png" alt="Nikhil Anand"> &nbsp; Never miss a <b>story</b> from us, subscribe to our newsletter</span>
+        <form action="https://wowthemes.us11.list-manage.com/subscribe/post?u=8aeb20a530e124561927d3bd8&amp;id=8c3d2d214b" method="post" name="mc-embedded-subscribe-form" class="wj-contact-form validate" target="_blank" novalidate>
+            <div class="mc-field-group">
+            <input type="email" placeholder="Email" name="EMAIL" class="required email" id="mce-EMAIL" autocomplete="on" required>
+            <input type="submit" value="Subscribe" name="subscribe" class="heart">
+            </div>
+        </form>
+	</div>
+</div>
+
+    
+</div> -->
+
+<!-- Categories Jumbotron
+================================================== -->
+<div class="jumbotron fortags">
+	<div class="d-md-flex h-100">
+		<div class="col-md-4 transpdark align-self-center text-center h-100">
+            <div class="d-md-flex align-items-center justify-content-center h-100">
+                <h2 class="d-md-block align-self-center py-1 font-weight-light">Explore <span class="d-none d-md-inline">→</span></h2>
+            </div>
+		</div>
+		<div class="col-md-8 p-5 align-self-center text-center">
+            
+            
+                
+                    <a class="mt-1 mb-1" href="/categories#review">review (1)</a>
+                
+            
+            
+		</div>
+	</div>
+</div>
+
+<!-- Begin Footer
+================================================== -->
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-sm-6 text-center text-lg-left">
+                Copyright © 2024 Nikhil Anand 
+            </div>
+            <div class="col-md-6 col-sm-6 text-center text-lg-right">    
+                <a target="_blank" href="https://www.wowthemes.net/mediumish-free-jekyll-template/">Mediumish Jekyll Theme</a> by WowThemes.net
+            </div>
+        </div>
+    </div>
+</footer>
+<!-- End Footer
+================================================== -->
+
+</div> <!-- /.site-content -->
+
+<!-- Scripts
+================================================== -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+
+<script src="/assets/js/mediumish.js"></script>
+
+
+
+<script src="/assets/js/ie10-viewport-bug-workaround.js"></script> 
+
+
+<script id="dsq-count-scr" src="//demowebsite.disqus.com/count.js"></script>
+
+
+</body>
+</html>
