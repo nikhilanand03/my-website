@@ -13,7 +13,7 @@ Brian Niccol became the CEO of Starbucks a few weeks ago. Unfortunately, our LLM
 
 In 2022, Kevin Meng et al. wrote the paper [Locating and Editing Factual Associations in GPT](https://arxiv.org/abs/2202.05262), detailing a method to identify where facts might be stored in LLMs and utilising this information to edit the facts in LLMs without any extra training. Note that training requires extensive GPU resources, so if we could edit facts just by changing a few weights, it would be faster and more resource-efficient.
 
-To figure out how to "edit" these LLMs, Meng et al. attempt to find out where the LLM stores these facts through Causal Mediation Analysis. In this blog, we'll go over how to apply causal mediation analysis to LLMs to understand the functions of an LLM's components. In particular, we'll see how to use it to locate the fact storage sites in an LLM.
+In this blog, we'll go over how a method called causal mediation analysis is applied to LLMs to locate the fact storage sites in an LLM.
 
 ### A Recap of LLM Architecture
 
@@ -49,23 +49,23 @@ Now we start by attempting to locate where in LLMs facts are stored through a me
 
 #### 1. Clean run
 
-Since the goal is to understand mechanisms of factual retrieval in LLMs, we provide an input string and ask the LLM to predict the next token representing a fact. For example, we may provide the string "Space Needle is located in the city of", after which we expect GPT to output "Seattle". In the clean run, no modifications were made to the LLM. The input is passed into the LLM, which predicts the next token. We'll assume there are $T$ tokens in the input.
+Let's say we provide the string "Space Needle is located in the city of", after which we expect GPT to output "Seattle". In the clean run, no modifications were made to the LLM. The input is passed into the LLM, which predicts the next token. We'll assume there are $T$ tokens in the input.
 
 <div style="text-align: center">
     <img src="../assets/images/cleanrun.png" alt="drawing" width="500"/>
 </div>
 
-The diagram shows that the input is passed into the embedder to get the embedded input, as we saw in equation (1). Then, the input is passed through several MLP and Attention layers (as we saw in equation (2)). Finally, the LLM predicts the next token by unembedding the last hidden state. Since the run is clean, the output is not affected, and the factually correct output is expected ("Seattle").
+The diagram shows that the input is passed into the embedder to get the embedded input. Then, the input is passed through several MLP and Attention layers. Finally, the LLM predicts the next token by unembedding the last hidden state. Since the run is clean, the output is not affected, and the factually correct output is expected ("Seattle").
 
 #### 2. Corrupted run
 
-In the second run, we run the same input into the embedder, but we corrupt all tokens by adding some number $\epsilon$ to each token's vector. We can see the summary in the below diagram. Note that since all future hidden states depend on the earlier layer, corruption of the earlier layer causes all the later hidden states to be changed. We denote the corrupted hidden states by $h_i^{\*(l)}$ for token $i$ and layer $l$.
+In the second run, we run the same input into the embedder, but we corrupt all tokens by adding some number $\epsilon$ to each token's vector. We can see the summary in the below diagram. Naturally, corrupting the earlier layer causes all the later hidden states to be changed. We denote the corrupted hidden states by $h_i^{\*(l)}$ for token $i$ and layer $l$.
 
 <div style="text-align: center">
     <img src="../assets/images/corrupted_run4.png" alt="drawing" width="550"/>
 </div>
 
-Due to the corruption of the embeddings before entering the first transformer layer, the output token is likely **incorrect**. It could be not meaningful or meaningful but not factually correct, depending on the value of $\epsilon$ (how strong the perturbation is). For example, the above diagram shows a meaningless output, "cro".
+Due to the corruption of the embeddings before entering the first transformer layer, the output token is likely **incorrect**. The output could be meaningless too, depending on the value of $\epsilon$ (how strong the perturbation is). For example, the above diagram shows a meaningless output, "cro".
 
 #### 3. Corrupted-with-restoration run
 
@@ -84,7 +84,7 @@ Let's consider our example: "Space Needle is located in the city of Seattle".
 So, the expected output is "Seattle".
 
 <div style="text-align: center; font-size: 30px">
- $$o = \text {'Seattle'}$$
+ $$o = \text {“Seattle”}$$
 </div>
 
 We define the Total Effect (TE) as:
@@ -93,7 +93,7 @@ We define the Total Effect (TE) as:
  $$\text{TE} = I\kern-0.3emP_*[o] - I\kern-0.3emP[o]$$
 </div>
 
-Here, $I\kern-0.3emP[o]$ represents the final token probability for the "Seattle" token in the clean run, while $I\kern-0.3emP_*[o]$ represents the probability for the "Seattle" token during the corrupted run. If it is high, we expect the LLM to output "Seattle"; if it is low, we expect the LLM to output a different token. For example, without corruption, "Seattle" may have a probability of 90%, but with corruption, its probability drops to 30%. Thus, we see that TE = ; therefore, corruption had a huge "Total Effect".
+Here, $I\kern-0.3emP[o]$ represents the probability of outputting the "Seattle" token in the clean run, while $I\kern-0.3emP_*[o]$ represents the probability of outputting the "Seattle" token during the corrupted run. If it is high, we expect the LLM to output "Seattle"; if it is low, we expect the LLM to output a different token. For example, without corruption, "Seattle" may have a probability of 90%, but with corruption, its probability drops to 30%. Thus, we see that TE = 60%; therefore, corruption had a huge "Total Effect".
 
 <div style="text-align: center">
     <img src="../assets/images/total_effect.png" alt="drawing" width="750"/>
@@ -118,10 +118,10 @@ Here, $I\kern-0.3emP_{*,\text{clean $h_i^{(l)}$}}[o]$ represents the final token
 
 Now, we want to see which locations in the model are responsible for remembering facts in general rather than specific facts. So, we average the total effect and indirect effects across several statements. 
 
-<div style="border-left: 4px solid #007bff; background-color: #f1f8ff; padding: 10px; margin-bottom: 16px; font-family: 'Comic Sans MS', cursive; font-size: 18px">
-  <li>The larger the <strong>Average Total Effect</strong>, the more the corruption <strong>degraded</strong> the output.</li>
+<div style="border-left: 4px solid #007bff; background-color: #f1f8ff; padding: 10px; margin-bottom: 16px; font-family: 'Marker Felt', fantasy; font-size: 18px">
+  <li>The larger the <strong>Average Total Effect</strong> is, the more the corruption would've <strong>degraded</strong> the output.</li>
 
-  <li>The larger the <strong>Average Indirect Effect</strong>, the more the restoration of a specific hidden state <strong>improved</strong> the output, and the more <strong>important</strong> that hidden state is.</li>
+  <li>The larger the <strong>Average Indirect Effect</strong> is, the more the restoration of a specific hidden state would've <strong>improved</strong> the output, and the more <strong>important</strong> that hidden state is.</li>
 </div>
 
 #### So what were the results?
@@ -134,7 +134,7 @@ The paper found that the Average Total Effect was 18.6% after corruption.
 
 However, they also noticed that specific hidden states mediated much of this effect. For instance, the Average Indirect Effect of the **last subject token** at **layer 15** was 8.7%. The subject in our example is "Space Needle", and the last token is "le". So, the hidden state at this token, in layer 15, holds the largest share of the Total Effect across all hidden states.
 
-<div style="border-left: 4px solid #007bff; background-color: #f1f8ff; padding: 10px; margin-bottom: 16px; font-family: 'Comic Sans MS', cursive; font-size: 18px">
+<div style="border-left: 4px solid #007bff; background-color: #f1f8ff; padding: 10px; margin-bottom: 16px; font-family: 'Marker Felt', fantasy; font-size: 22px">
   In English, the subject of the sentence refers to the person, place or thing that performs the action in the sentence, usually placed before the verb.
 </div>
 
@@ -151,8 +151,10 @@ The maximum Average Indirect Effect at the last subject token was 6.6% for MLP l
 
 #### Conclusion and Limitations
 
-This approach, called Causal Mediation Analysis, helps determine which parts of an LLM are in charge of which tasks. Once we know the crucial sites for specific tasks, we can target those sites for doing that task better! For example, factual associations depended more significantly on MLP layers at the last subject token. While this is true, we can't infer that the MLP layers exclusively take part in tasks involved in factual associations. We can assume that they have some role in the mechanism, though we don't know their exact role or whether other parts are also crucial. During my next blog (on editing factual associations in LLMs), I'll talk about the mechanism (per the paper's hypothesis) and how they used it to edit facts and show actual results!
+This approach, called Causal Mediation Analysis, helps determine which parts of an LLM are in charge of which tasks. Once we know the crucial sites for specific tasks, we can target those sites for doing that task better! For example, factual associations depend more significantly on MLP layers at the last subject token. In fact, the MLPs probably act like databases, where you input a question and it retrieves the answer through a simple mapping.
+
+There are, however, some limitations. While MLP layers seem important for factual associations, we can't infer that the other types of layers are not, and we still haven't been able to prove the exact mechanism for storing facts.
 
 #### Acknowledgements
 
-The contents of this blog are from the paper [Locating and Editing Factual Associations in GPT](https://arxiv.org/abs/2202.05262) by Kevin Meng et al. We mainly cover the aspects of 'locating' factual associations but leave out the 'editing' part for a later blog.
+The contents of this blog are from the paper [Locating and Editing Factual Associations in GPT](https://arxiv.org/abs/2202.05262) by Kevin Meng et al. All diagrams were made using Canva.
