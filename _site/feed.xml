@@ -5,8 +5,8 @@
     <description></description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sun, 22 Sep 2024 14:27:20 +0530</pubDate>
-    <lastBuildDate>Sun, 22 Sep 2024 14:27:20 +0530</lastBuildDate>
+    <pubDate>Sun, 22 Sep 2024 14:37:54 +0530</pubDate>
+    <lastBuildDate>Sun, 22 Sep 2024 14:37:54 +0530</lastBuildDate>
     <generator>Jekyll v4.3.3</generator>
     
       <item>
@@ -119,11 +119,11 @@
 
 &lt;p&gt;Now, we want to see which locations in the model are responsible for remembering facts in general rather than specific facts. So, we average the total effect and indirect effects across several statements.&lt;/p&gt;
 
-&lt;div style=&quot;border-left: 4px solid #007bff; background-color: #f1f8ff; padding: 10px; margin-bottom: 16px; font-family: 'Marker Felt', fantasy; font-size: 18px&quot;&gt;
+&lt;div style=&quot;border-left: 4px solid gray; background-color: #EAEAEA; padding: 10px; margin-bottom: 16px; font-size: 17px&quot;&gt;&lt;i&gt;
   &lt;li&gt;The larger the &lt;strong&gt;Average Total Effect&lt;/strong&gt; is, the more the corruption would've &lt;strong&gt;degraded&lt;/strong&gt; the output.&lt;/li&gt;
 
   &lt;li&gt;The larger the &lt;strong&gt;Average Indirect Effect&lt;/strong&gt; is, the more the restoration of a specific hidden state would've &lt;strong&gt;improved&lt;/strong&gt; the output, and the more &lt;strong&gt;important&lt;/strong&gt; that hidden state is.&lt;/li&gt;
-&lt;/div&gt;
+&lt;/i&gt;&lt;/div&gt;
 
 &lt;h4 id=&quot;so-what-were-the-results&quot;&gt;So what were the results?&lt;/h4&gt;
 
@@ -135,8 +135,8 @@
 
 &lt;p&gt;However, they also noticed that specific hidden states mediated much of this effect. For instance, the Average Indirect Effect of the &lt;strong&gt;last subject token&lt;/strong&gt; at &lt;strong&gt;layer 15&lt;/strong&gt; was 8.7%. The subject in our example is “Space Needle”, and the last token is “le”. So, the hidden state at this token, in layer 15, holds the largest share of the Total Effect across all hidden states.&lt;/p&gt;
 
-&lt;div style=&quot;border-left: 4px solid #007bff; background-color: #f1f8ff; padding: 10px; margin-bottom: 16px; font-family: 'Marker Felt', fantasy; font-size: 22px&quot;&gt;
-  In English, the subject of the sentence refers to the person, place or thing that performs the action in the sentence, usually placed before the verb.
+&lt;div style=&quot;border-left: 4px solid gray; background-color: #EAEAEA; padding: 10px; margin-bottom: 16px; font-size: 17px&quot;&gt;&lt;i&gt;
+  In English, the subject of the sentence refers to the person, place or thing that performs the action in the sentence, usually placed before the verb.&lt;/i&gt;
 &lt;/div&gt;
 
 &lt;h4 id=&quot;separating-contributions-of-mlp-and-attention-layers&quot;&gt;Separating contributions of MLP and Attention layers&lt;/h4&gt;

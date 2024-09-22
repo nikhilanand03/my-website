@@ -118,11 +118,11 @@ Here, $I\kern-0.3emP_{*,\text{clean $h_i^{(l)}$}}[o]$ represents the final token
 
 Now, we want to see which locations in the model are responsible for remembering facts in general rather than specific facts. So, we average the total effect and indirect effects across several statements. 
 
-<div style="border-left: 4px solid #007bff; background-color: #f1f8ff; padding: 10px; margin-bottom: 16px; font-family: 'Marker Felt', fantasy; font-size: 18px">
+<div style="border-left: 4px solid gray; background-color: #EAEAEA; padding: 10px; margin-bottom: 16px; font-size: 17px"><i>
   <li>The larger the <strong>Average Total Effect</strong> is, the more the corruption would've <strong>degraded</strong> the output.</li>
 
   <li>The larger the <strong>Average Indirect Effect</strong> is, the more the restoration of a specific hidden state would've <strong>improved</strong> the output, and the more <strong>important</strong> that hidden state is.</li>
-</div>
+</i></div>
 
 #### So what were the results?
 
@@ -134,8 +134,8 @@ The paper found that the Average Total Effect was 18.6% after corruption.
 
 However, they also noticed that specific hidden states mediated much of this effect. For instance, the Average Indirect Effect of the **last subject token** at **layer 15** was 8.7%. The subject in our example is "Space Needle", and the last token is "le". So, the hidden state at this token, in layer 15, holds the largest share of the Total Effect across all hidden states.
 
-<div style="border-left: 4px solid #007bff; background-color: #f1f8ff; padding: 10px; margin-bottom: 16px; font-family: 'Marker Felt', fantasy; font-size: 22px">
-  In English, the subject of the sentence refers to the person, place or thing that performs the action in the sentence, usually placed before the verb.
+<div style="border-left: 4px solid gray; background-color: #EAEAEA; padding: 10px; margin-bottom: 16px; font-size: 17px"><i>
+  In English, the subject of the sentence refers to the person, place or thing that performs the action in the sentence, usually placed before the verb.</i>
 </div>
 
 #### Separating contributions of MLP and Attention layers
