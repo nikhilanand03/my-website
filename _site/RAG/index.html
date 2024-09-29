@@ -275,7 +275,7 @@
 </div>
 <p><br /></p>
 
-<p>Now, the LLM might retrieve a Wikipedia article saying the following:</p>
+<p>In a RAG setup, the LLM might retrieve a Wikipedia article saying the following:</p>
 
 <div style="border-left: 4px solid gray; background-color: #EAEAEA; padding: 10px; margin-bottom: 16px; font-size: 20px">
 <i>
@@ -292,19 +292,19 @@ Tamil is the language spoken by most of Chennai's population; English is largely
 </div>
 <p><br /></p>
 
-<p>Providing the context in the RAG setup leads to the correct answer, <i>“Tamil”</i>. One of the advantages of RAG is that it helps reduce hallucinations by ensuring the LLM first retrieves facts from the web and then at least gets the facts right.</p>
+<p>Providing the context leads to the correct answer, <i>“Tamil”</i>. One of the advantages of RAG is that it helps reduce hallucinations by ensuring the LLM first retrieves facts from the web and then at least gets the facts right.</p>
 
 <p>But what’s going on internally?</p>
 
 <h4 id="causal-tracing">Causal Tracing</h4>
 
-<p>I wrote an <a href="https://medium.com/@nikhilanandnj/where-are-facts-stored-in-large-language-models-0869914cfcbf">earlier blog</a> that explains the process of Causal Tracing in detail. I’d greatly recommend going through that (specifically the section on “Causal Mediation Analysis”) before reading this blog.</p>
+<p>I wrote an <a href="https://medium.com/@nikhilanandnj/where-are-facts-stored-in-large-language-models-0869914cfcbf">earlier blog</a> that explains the process of Causal Tracing in detail. I’d strongly recommend going through that (specifically the section on “Causal Mediation Analysis”) before reading this blog.</p>
 
 <p>Let’s consider the input: “What is the most popular language in <u>Chennai</u>?”</p>
 
-<p>The idea behind causal tracing is figuring out which parts of the LLM are responsible for a particular behaviour. We saw over there that facts are stored in MLPs, and the MLP at the <strong>Last Subject Token (LST)</strong> significantly impacts the output. In this case, “<u>Chennai</u>” is the <strong>LST</strong>. We can test this through causal tracing by seeing whether ruining the input and restoring the MLP at the LST (Last Subject Token) will return the original input.</p>
+<p>The idea behind causal tracing is figuring out which parts of the LLM are responsible for a particular behaviour. We saw over there that facts are stored in MLPs, and the MLP at the <strong>Last Subject Token (LST)</strong> significantly impacts the output. In this case, “<u>Chennai</u>” is the <strong>LST</strong>.</p>
 
-<p>In the base case, we don’t perform corruption and the LLM outputs “Hindi”.</p>
+<p>In the clean case, we don’t perform corruption and the LLM outputs “Hindi”.</p>
 
 <div style="text-align: center">
     <img src="../assets/images/mlp_causal1.png" alt="drawing" width="500" />
@@ -318,9 +318,9 @@ Tamil is the language spoken by most of Chennai's population; English is largely
 </div>
 <p><br /></p>
 
-<p>We average this value over several statements, so we know it happens for multiple statements, not just one.</p>
+<p>Restoring the MLP at the LST causes the probability of “Hindi” to rise, and we average this delta in probability over several statements, so we know it rises for multiple statements, not just one.</p>
 
-<p>However, let’s consider the RAG setup.</p>
+<p>On the other hand, let’s consider the RAG setup, which accurately outputs “Tamil” in the clean case.</p>
 
 <div style="text-align: center">
     <img src="../assets/images/mlp_notcausal1.png" alt="drawing" width="620" />
@@ -332,14 +332,16 @@ Tamil is the language spoken by most of Chennai's population; English is largely
 </div>
 <p><br /></p>
 
-<p>The hypothesis stated in our <a href="https://medium.com/@nikhilanandnj/where-are-facts-stored-in-large-language-models-0869914cfcbf">previous blog</a> is that <strong>MLPs have something to do with factual recall</strong>. Restoring the MLP hidden states at the LST no longer returns the original output (“Tamil”). It looks like <strong>MLP activations aren’t that important anymore</strong>. Which means the LLM is <strong>no longer utilising its parametric memory</strong>. This makes sense since we expect it to focus on the context rather than use its parametric memory.</p>
+<p>The hypothesis stated in our <a href="https://medium.com/@nikhilanandnj/where-are-facts-stored-in-large-language-models-0869914cfcbf">previous blog</a> is that <strong>MLPs have something to do with factual recall</strong>. However, restoring the MLP hidden states at the LST no longer returns the original output (“Tamil”). It looks like <strong>MLP activations aren’t that important anymore</strong>.</p>
+
+<p>That could mean the LLM is <strong>no longer utilising its parametric memory</strong>. This makes sense since we expect it to focus on the context rather than use its parametric memory.</p>
 
 <div style="border-left: 4px solid gray; background-color: #EAEAEA; padding: 10px; margin-bottom: 16px; font-size: 20px">
 <i>
 <b>Finding #1:</b> In the presence of a context, LLMs minimally use the parametric memory to answer a question.</i>
 </div>
 
-<p>So, if MLPs aren’t that important anymore, what is? <i>(Spoiler: Attention)</i></p>
+<p>So, if MLPs aren’t that important anymore, what is?</p>
 
 <h4 id="how-attention-works-in-llms">How Attention Works in LLMs</h4>
 
@@ -414,11 +416,13 @@ Think of it this way. Consider three linear maps that map the residual vector x 
 
 <p>We can directly probe the attention values during inference. While generating the output “Tamil”, we can check which tokens our final token is enriched by during this generation.</p>
 
-<div style="border-left: 4px solid gray; background-color: #EAEAEA; padding: 10px; margin-bottom: 16px; font-size: 18px">
-<i>
-The input to the LLM is a context plus a query. From now on, AT refers to the attribute token (the "Tamil" token within the context), and ST refers to the subject token (the "Chennai" token within the query).
-</i>
+<p>The input to the LLM is a context plus a query. From now on, AT refers to the attribute token (the “Tamil” token within the context), and ST refers to the subject token (the “Chennai” token within the query).</p>
+
+<div style="text-align: center">
+    <img src="../assets/images/AT_ST_C_Q.png" alt="drawing" width="1500" />
+    
 </div>
+<p><br /></p>
 
 <p>They found out that the attention to the attribute token was much larger than the attention to the subject token (averaged across several examples). That shows that the LLM used the context to answer the question.</p>
 

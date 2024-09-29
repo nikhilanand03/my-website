@@ -5,8 +5,8 @@
     <description></description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sun, 29 Sep 2024 15:04:48 +0530</pubDate>
-    <lastBuildDate>Sun, 29 Sep 2024 15:04:48 +0530</lastBuildDate>
+    <pubDate>Sun, 29 Sep 2024 15:46:39 +0530</pubDate>
+    <lastBuildDate>Sun, 29 Sep 2024 15:46:39 +0530</lastBuildDate>
     <generator>Jekyll v4.3.3</generator>
     
       <item>
@@ -23,7 +23,7 @@
 &lt;/div&gt;
 &lt;p&gt;&lt;br /&gt;&lt;/p&gt;
 
-&lt;p&gt;Now, the LLM might retrieve a Wikipedia article saying the following:&lt;/p&gt;
+&lt;p&gt;In a RAG setup, the LLM might retrieve a Wikipedia article saying the following:&lt;/p&gt;
 
 &lt;div style=&quot;border-left: 4px solid gray; background-color: #EAEAEA; padding: 10px; margin-bottom: 16px; font-size: 20px&quot;&gt;
 &lt;i&gt;
@@ -40,19 +40,19 @@ Tamil is the language spoken by most of Chennai's population; English is largely
 &lt;/div&gt;
 &lt;p&gt;&lt;br /&gt;&lt;/p&gt;
 
-&lt;p&gt;Providing the context in the RAG setup leads to the correct answer, &lt;i&gt;“Tamil”&lt;/i&gt;. One of the advantages of RAG is that it helps reduce hallucinations by ensuring the LLM first retrieves facts from the web and then at least gets the facts right.&lt;/p&gt;
+&lt;p&gt;Providing the context leads to the correct answer, &lt;i&gt;“Tamil”&lt;/i&gt;. One of the advantages of RAG is that it helps reduce hallucinations by ensuring the LLM first retrieves facts from the web and then at least gets the facts right.&lt;/p&gt;
 
 &lt;p&gt;But what’s going on internally?&lt;/p&gt;
 
 &lt;h4 id=&quot;causal-tracing&quot;&gt;Causal Tracing&lt;/h4&gt;
 
-&lt;p&gt;I wrote an &lt;a href=&quot;https://medium.com/@nikhilanandnj/where-are-facts-stored-in-large-language-models-0869914cfcbf&quot;&gt;earlier blog&lt;/a&gt; that explains the process of Causal Tracing in detail. I’d greatly recommend going through that (specifically the section on “Causal Mediation Analysis”) before reading this blog.&lt;/p&gt;
+&lt;p&gt;I wrote an &lt;a href=&quot;https://medium.com/@nikhilanandnj/where-are-facts-stored-in-large-language-models-0869914cfcbf&quot;&gt;earlier blog&lt;/a&gt; that explains the process of Causal Tracing in detail. I’d strongly recommend going through that (specifically the section on “Causal Mediation Analysis”) before reading this blog.&lt;/p&gt;
 
 &lt;p&gt;Let’s consider the input: “What is the most popular language in &lt;u&gt;Chennai&lt;/u&gt;?”&lt;/p&gt;
 
-&lt;p&gt;The idea behind causal tracing is figuring out which parts of the LLM are responsible for a particular behaviour. We saw over there that facts are stored in MLPs, and the MLP at the &lt;strong&gt;Last Subject Token (LST)&lt;/strong&gt; significantly impacts the output. In this case, “&lt;u&gt;Chennai&lt;/u&gt;” is the &lt;strong&gt;LST&lt;/strong&gt;. We can test this through causal tracing by seeing whether ruining the input and restoring the MLP at the LST (Last Subject Token) will return the original input.&lt;/p&gt;
+&lt;p&gt;The idea behind causal tracing is figuring out which parts of the LLM are responsible for a particular behaviour. We saw over there that facts are stored in MLPs, and the MLP at the &lt;strong&gt;Last Subject Token (LST)&lt;/strong&gt; significantly impacts the output. In this case, “&lt;u&gt;Chennai&lt;/u&gt;” is the &lt;strong&gt;LST&lt;/strong&gt;.&lt;/p&gt;
 
-&lt;p&gt;In the base case, we don’t perform corruption and the LLM outputs “Hindi”.&lt;/p&gt;
+&lt;p&gt;In the clean case, we don’t perform corruption and the LLM outputs “Hindi”.&lt;/p&gt;
 
 &lt;div style=&quot;text-align: center&quot;&gt;
     &lt;img src=&quot;../assets/images/mlp_causal1.png&quot; alt=&quot;drawing&quot; width=&quot;500&quot; /&gt;
@@ -66,9 +66,9 @@ Tamil is the language spoken by most of Chennai's population; English is largely
 &lt;/div&gt;
 &lt;p&gt;&lt;br /&gt;&lt;/p&gt;
 
-&lt;p&gt;We average this value over several statements, so we know it happens for multiple statements, not just one.&lt;/p&gt;
+&lt;p&gt;Restoring the MLP at the LST causes the probability of “Hindi” to rise, and we average this delta in probability over several statements, so we know it rises for multiple statements, not just one.&lt;/p&gt;
 
-&lt;p&gt;However, let’s consider the RAG setup.&lt;/p&gt;
+&lt;p&gt;On the other hand, let’s consider the RAG setup, which accurately outputs “Tamil” in the clean case.&lt;/p&gt;
 
 &lt;div style=&quot;text-align: center&quot;&gt;
     &lt;img src=&quot;../assets/images/mlp_notcausal1.png&quot; alt=&quot;drawing&quot; width=&quot;620&quot; /&gt;
@@ -80,14 +80,16 @@ Tamil is the language spoken by most of Chennai's population; English is largely
 &lt;/div&gt;
 &lt;p&gt;&lt;br /&gt;&lt;/p&gt;
 
-&lt;p&gt;The hypothesis stated in our &lt;a href=&quot;https://medium.com/@nikhilanandnj/where-are-facts-stored-in-large-language-models-0869914cfcbf&quot;&gt;previous blog&lt;/a&gt; is that &lt;strong&gt;MLPs have something to do with factual recall&lt;/strong&gt;. Restoring the MLP hidden states at the LST no longer returns the original output (“Tamil”). It looks like &lt;strong&gt;MLP activations aren’t that important anymore&lt;/strong&gt;. Which means the LLM is &lt;strong&gt;no longer utilising its parametric memory&lt;/strong&gt;. This makes sense since we expect it to focus on the context rather than use its parametric memory.&lt;/p&gt;
+&lt;p&gt;The hypothesis stated in our &lt;a href=&quot;https://medium.com/@nikhilanandnj/where-are-facts-stored-in-large-language-models-0869914cfcbf&quot;&gt;previous blog&lt;/a&gt; is that &lt;strong&gt;MLPs have something to do with factual recall&lt;/strong&gt;. However, restoring the MLP hidden states at the LST no longer returns the original output (“Tamil”). It looks like &lt;strong&gt;MLP activations aren’t that important anymore&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;That could mean the LLM is &lt;strong&gt;no longer utilising its parametric memory&lt;/strong&gt;. This makes sense since we expect it to focus on the context rather than use its parametric memory.&lt;/p&gt;
 
 &lt;div style=&quot;border-left: 4px solid gray; background-color: #EAEAEA; padding: 10px; margin-bottom: 16px; font-size: 20px&quot;&gt;
 &lt;i&gt;
 &lt;b&gt;Finding #1:&lt;/b&gt; In the presence of a context, LLMs minimally use the parametric memory to answer a question.&lt;/i&gt;
 &lt;/div&gt;
 
-&lt;p&gt;So, if MLPs aren’t that important anymore, what is? &lt;i&gt;(Spoiler: Attention)&lt;/i&gt;&lt;/p&gt;
+&lt;p&gt;So, if MLPs aren’t that important anymore, what is?&lt;/p&gt;
 
 &lt;h4 id=&quot;how-attention-works-in-llms&quot;&gt;How Attention Works in LLMs&lt;/h4&gt;
 
@@ -162,11 +164,13 @@ Think of it this way. Consider three linear maps that map the residual vector x 
 
 &lt;p&gt;We can directly probe the attention values during inference. While generating the output “Tamil”, we can check which tokens our final token is enriched by during this generation.&lt;/p&gt;
 
-&lt;div style=&quot;border-left: 4px solid gray; background-color: #EAEAEA; padding: 10px; margin-bottom: 16px; font-size: 18px&quot;&gt;
-&lt;i&gt;
-The input to the LLM is a context plus a query. From now on, AT refers to the attribute token (the &quot;Tamil&quot; token within the context), and ST refers to the subject token (the &quot;Chennai&quot; token within the query).
-&lt;/i&gt;
+&lt;p&gt;The input to the LLM is a context plus a query. From now on, AT refers to the attribute token (the “Tamil” token within the context), and ST refers to the subject token (the “Chennai” token within the query).&lt;/p&gt;
+
+&lt;div style=&quot;text-align: center&quot;&gt;
+    &lt;img src=&quot;../assets/images/AT_ST_C_Q.png&quot; alt=&quot;drawing&quot; width=&quot;1500&quot; /&gt;
+    
 &lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
 
 &lt;p&gt;They found out that the attention to the attribute token was much larger than the attention to the subject token (averaged across several examples). That shows that the LLM used the context to answer the question.&lt;/p&gt;
 
