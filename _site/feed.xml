@@ -5,9 +5,214 @@
     <description></description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 23 Sep 2024 11:44:51 +0530</pubDate>
-    <lastBuildDate>Mon, 23 Sep 2024 11:44:51 +0530</lastBuildDate>
+    <pubDate>Sun, 29 Sep 2024 15:04:48 +0530</pubDate>
+    <lastBuildDate>Sun, 29 Sep 2024 15:04:48 +0530</lastBuildDate>
     <generator>Jekyll v4.3.3</generator>
+    
+      <item>
+        <title>What makes RAG so effective? (How Attention Shapes Understanding in LLMs)</title>
+        <description>&lt;p&gt;Since ChatGPT came out, I remember seeing several blogs and videos talking about this new technique called Retrieval-Augmented Generation. It worked exceedingly well in preventing hallucinations, and ensuring factually correct outputs. Since then, startups and libraries have been built just to help people optimise this process for their use cases.&lt;/p&gt;
+
+&lt;p&gt;What is Retrieval-Augmented Generation? RAG is a technique that uses an ability of LLMs known as &lt;strong&gt;In-Context Learning&lt;/strong&gt;. That means that if we provide a context with some information that an LLM doesn’t know, LLMs are adept at learning new information from the context and answering the question accordingly.&lt;/p&gt;
+
+&lt;p&gt;For example, the user asks the LLM &lt;i&gt;“What is the most popular language spoken in Chennai?”&lt;/i&gt; and the LLM incorrectly outputs &lt;i&gt;“Hindi”&lt;/i&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;div style=&quot;text-align: center;&quot;&gt;
+    &lt;img src=&quot;../assets/images/chennai_hindi.png&quot; alt=&quot;drawing&quot; width=&quot;630&quot; /&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;Now, the LLM might retrieve a Wikipedia article saying the following:&lt;/p&gt;
+
+&lt;div style=&quot;border-left: 4px solid gray; background-color: #EAEAEA; padding: 10px; margin-bottom: 16px; font-size: 20px&quot;&gt;
+&lt;i&gt;
+&lt;b&gt;Context: &lt;/b&gt;
+Tamil is the language spoken by most of Chennai's population; English is largely spoken by white-collar workers.[145][146] As per the 2011 census, Tamil is the most spoken language with 3,640,389 (78.3%) of speakers...
+&lt;/i&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Once the LLM has retrieved this from the web, it prepends this to the question and feeds it back into the LLM to get an answer.&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;div style=&quot;text-align: center;&quot;&gt;
+    &lt;img src=&quot;../assets/images/chennai_tamil.png&quot; alt=&quot;drawing&quot; width=&quot;630&quot; /&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;Providing the context in the RAG setup leads to the correct answer, &lt;i&gt;“Tamil”&lt;/i&gt;. One of the advantages of RAG is that it helps reduce hallucinations by ensuring the LLM first retrieves facts from the web and then at least gets the facts right.&lt;/p&gt;
+
+&lt;p&gt;But what’s going on internally?&lt;/p&gt;
+
+&lt;h4 id=&quot;causal-tracing&quot;&gt;Causal Tracing&lt;/h4&gt;
+
+&lt;p&gt;I wrote an &lt;a href=&quot;https://medium.com/@nikhilanandnj/where-are-facts-stored-in-large-language-models-0869914cfcbf&quot;&gt;earlier blog&lt;/a&gt; that explains the process of Causal Tracing in detail. I’d greatly recommend going through that (specifically the section on “Causal Mediation Analysis”) before reading this blog.&lt;/p&gt;
+
+&lt;p&gt;Let’s consider the input: “What is the most popular language in &lt;u&gt;Chennai&lt;/u&gt;?”&lt;/p&gt;
+
+&lt;p&gt;The idea behind causal tracing is figuring out which parts of the LLM are responsible for a particular behaviour. We saw over there that facts are stored in MLPs, and the MLP at the &lt;strong&gt;Last Subject Token (LST)&lt;/strong&gt; significantly impacts the output. In this case, “&lt;u&gt;Chennai&lt;/u&gt;” is the &lt;strong&gt;LST&lt;/strong&gt;. We can test this through causal tracing by seeing whether ruining the input and restoring the MLP at the LST (Last Subject Token) will return the original input.&lt;/p&gt;
+
+&lt;p&gt;In the base case, we don’t perform corruption and the LLM outputs “Hindi”.&lt;/p&gt;
+
+&lt;div style=&quot;text-align: center&quot;&gt;
+    &lt;img src=&quot;../assets/images/mlp_causal1.png&quot; alt=&quot;drawing&quot; width=&quot;500&quot; /&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;If we corrupt the LLM, we get the wrong output, but after restoring only the MLP at the LST, we see that the LLM brings back the original output.&lt;/p&gt;
+
+&lt;div style=&quot;text-align: center&quot;&gt;
+    &lt;img src=&quot;../assets/images/mlp_causal2.png&quot; alt=&quot;drawing&quot; width=&quot;1000&quot; /&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;We average this value over several statements, so we know it happens for multiple statements, not just one.&lt;/p&gt;
+
+&lt;p&gt;However, let’s consider the RAG setup.&lt;/p&gt;
+
+&lt;div style=&quot;text-align: center&quot;&gt;
+    &lt;img src=&quot;../assets/images/mlp_notcausal1.png&quot; alt=&quot;drawing&quot; width=&quot;620&quot; /&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;div style=&quot;text-align: center&quot;&gt;
+    &lt;img src=&quot;../assets/images/mlp_notcausal2.png&quot; alt=&quot;drawing&quot; width=&quot;1000&quot; /&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;The hypothesis stated in our &lt;a href=&quot;https://medium.com/@nikhilanandnj/where-are-facts-stored-in-large-language-models-0869914cfcbf&quot;&gt;previous blog&lt;/a&gt; is that &lt;strong&gt;MLPs have something to do with factual recall&lt;/strong&gt;. Restoring the MLP hidden states at the LST no longer returns the original output (“Tamil”). It looks like &lt;strong&gt;MLP activations aren’t that important anymore&lt;/strong&gt;. Which means the LLM is &lt;strong&gt;no longer utilising its parametric memory&lt;/strong&gt;. This makes sense since we expect it to focus on the context rather than use its parametric memory.&lt;/p&gt;
+
+&lt;div style=&quot;border-left: 4px solid gray; background-color: #EAEAEA; padding: 10px; margin-bottom: 16px; font-size: 20px&quot;&gt;
+&lt;i&gt;
+&lt;b&gt;Finding #1:&lt;/b&gt; In the presence of a context, LLMs minimally use the parametric memory to answer a question.&lt;/i&gt;
+&lt;/div&gt;
+
+&lt;p&gt;So, if MLPs aren’t that important anymore, what is? &lt;i&gt;(Spoiler: Attention)&lt;/i&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;how-attention-works-in-llms&quot;&gt;How Attention Works in LLMs&lt;/h4&gt;
+
+&lt;p&gt;I’d recommend going over &lt;a href=&quot;https://jalammar.github.io/illustrated-transformer/&quot;&gt;Jay Allamar’s blog post&lt;/a&gt; “The Illustrated Transformer” to better understand how attention works.&lt;/p&gt;
+
+&lt;p&gt;Attention is essential in LLMs because it allows LLMs to model the meaning of words based on other words in the input. For example, an “it” later in the sentence might refer to a noun that came before, and information needs to flow from the noun to the “it” to generate the next token. Thus, some dependencies must be facilitated across tokens to get the value of the attention block’s output. Here’s an awesome diagram from &lt;a href=&quot;https://jalammar.github.io/illustrated-transformer/&quot;&gt;Jay Allamar’s blog post&lt;/a&gt;.&lt;/p&gt;
+
+&lt;div style=&quot;text-align: center&quot;&gt;
+    &lt;img src=&quot;../assets/images/intertoken-attn.png&quot; alt=&quot;drawing&quot; width=&quot;500&quot; /&gt;
+    
+&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;In this case, the “it” token is getting &lt;i&gt;enriched by the “animal” token&lt;/i&gt;.&lt;/p&gt;
+
+&lt;!-- Let's assume that there's only one attention head in each layer (to simplify). --&gt;
+
+&lt;!-- &lt;div style=&quot;text-align: center&quot;&gt;
+ &lt;img src=&quot;../assets/images/zoom-in-attention.png&quot; alt=&quot;drawing&quot; width=&quot;700&quot;/&gt;
+&lt;/div&gt;
+
+We'll assume: --&gt;
+
+&lt;!-- &lt;div style=&quot;text-align: center; font-size: 30px&quot;&gt;
+ $$h_i^{(l-1)} + m_i^{(l)} = x_i^{(l)}$$
+&lt;/div&gt; --&gt;
+
+&lt;!-- Now let's focus specifically on the attention head at layer $l$ and token position $i$. --&gt;
+
+&lt;!-- &lt;div style=&quot;text-align: center; font-size: 60px&quot;&gt;
+ $$v_0^{(l)}$$
+ $$q_0^{(l)}$$
+ $$k_0^{(l)}$$
+&lt;/div&gt; --&gt;
+
+&lt;!-- &lt;div style=&quot;text-align: center&quot;&gt;
+ &lt;img src=&quot;../assets/images/attn_head.png&quot; alt=&quot;drawing&quot; width=&quot;500&quot;/&gt;
+&lt;/div&gt;
+&lt;br&gt; --&gt;
+
+&lt;!-- But $a_i^{(l)}$ doesn't depend only on the token position $i$. It depends on the residual stream vector $x_i$ at all token positions from $i=0$ to $N$.
+
+Think of it this way. Consider three linear maps that map the residual vector x to three different vectors, q, k, and v.
+
+1. Query vector q
+2. Key vector k
+3. Value vector v
+
+&lt;div style=&quot;text-align: center&quot;&gt;
+ &lt;img src=&quot;../assets/images/qkv.png&quot; alt=&quot;drawing&quot; width=&quot;300&quot;/&gt;
+&lt;/div&gt;
+&lt;br&gt; --&gt;
+
+&lt;!-- Now we'd have to apply the function to all token positions at layer l. --&gt;
+
+&lt;!-- &lt;div style=&quot;text-align: center&quot;&gt;
+ &lt;img src=&quot;../assets/images/qkv_all_pos.png&quot; alt=&quot;drawing&quot; width=&quot;300&quot;/&gt;
+&lt;/div&gt;
+&lt;br&gt; --&gt;
+
+&lt;!-- &lt;div style=&quot;text-align: center; font-size: 30px&quot;&gt;
+ $$a_i^{(l)} = (\sum_{j=0}^{N} A_{ij}^{(l)} v_{j}^{(l)})W_{out}$$
+&lt;/div&gt; --&gt;
+
+&lt;!-- So each token position somehow uses information from all the tokens to get the output of that block. In other words, our tokens are &quot;enriched&quot; by the other tokens in the input. Each $A_{ij}^{(l)}$ factor represents how much token $i$ is enriched by token $j$. This is called attention, a function of the queries and keys. --&gt;
+
+&lt;!-- &lt;div style=&quot;text-align: center&quot;&gt;
+ &lt;img src=&quot;../assets/images/Wout_attn.png&quot; alt=&quot;drawing&quot; width=&quot;500&quot;/&gt;
+&lt;/div&gt; --&gt;
+
+&lt;h4 id=&quot;attention-contributions&quot;&gt;Attention Contributions&lt;/h4&gt;
+
+&lt;p&gt;We can directly probe the attention values during inference. While generating the output “Tamil”, we can check which tokens our final token is enriched by during this generation.&lt;/p&gt;
+
+&lt;div style=&quot;border-left: 4px solid gray; background-color: #EAEAEA; padding: 10px; margin-bottom: 16px; font-size: 18px&quot;&gt;
+&lt;i&gt;
+The input to the LLM is a context plus a query. From now on, AT refers to the attribute token (the &quot;Tamil&quot; token within the context), and ST refers to the subject token (the &quot;Chennai&quot; token within the query).
+&lt;/i&gt;
+&lt;/div&gt;
+
+&lt;p&gt;They found out that the attention to the attribute token was much larger than the attention to the subject token (averaged across several examples). That shows that the LLM used the context to answer the question.&lt;/p&gt;
+
+&lt;h4 id=&quot;attention-knockouts&quot;&gt;Attention Knockouts&lt;/h4&gt;
+
+&lt;p&gt;We can also perform attention knockouts to confirm the importance of the attention values. This one is similar to causal analysis, where we knock out certain attention edges and see what effect that has on the final probability distribution and output.&lt;/p&gt;
+
+&lt;p&gt;To knock out attention edge weights, we set the attention values to 0. Here, we ensure that the last token is &lt;strong&gt;not enriched&lt;/strong&gt; by the context’s &lt;strong&gt;attribute token&lt;/strong&gt; (“Tamil”).&lt;/p&gt;
+
+&lt;div style=&quot;text-align: center; font-size: 30px&quot;&gt;
+ $$A_{\text{AT,N}}^{(l)} = 0$$
+&lt;/div&gt;
+
+&lt;p&gt;This significantly changes the LLM’s output, causing it not to output “Tamil”.&lt;/p&gt;
+
+&lt;p&gt;But let’s say we instead ensure the last token is not enriched by the query’s &lt;strong&gt;subject token&lt;/strong&gt; (“Chennai”).&lt;/p&gt;
+
+&lt;div style=&quot;text-align: center; font-size: 30px&quot;&gt;
+ $$A_{\text{ST,N}}^{(l)} = 0$$
+&lt;/div&gt;
+
+&lt;p&gt;The LLM may still output “Tamil”, showing that this time, the attention wasn’t really that important.&lt;/p&gt;
+
+&lt;p&gt;Specifically, knocking out the attention edge to the subject token led to a 5% drop in the output probability (on average, across samples), while knocking out the attention edge to the attribute token led to a 20% drop in probability (on average).&lt;/p&gt;
+
+&lt;div style=&quot;border-left: 4px solid gray; background-color: #EAEAEA; padding: 10px; margin-bottom: 16px; font-size: 20px&quot;&gt;
+&lt;i&gt;
+&lt;b&gt;Finding #2:&lt;/b&gt; Language models internally rely primarily on the context when it is provided to answer a question.&lt;/i&gt;
+&lt;/div&gt;
+
+&lt;h4 id=&quot;conclusions-and-limitations&quot;&gt;Conclusions and Limitations&lt;/h4&gt;
+
+&lt;p&gt;The main takeaway of the paper is that during a RAG setup, when a context is provided, the LLM relies much less on parametric memory and more on context to answer the question. Even though this sounds trivial, it also reinstates the fact that the memory of the LLM is somehow encoded into the MLPs and that these MLPs become a lot less critical in RAG setups. Knowing more about the mechanisms of these processes can help us further optimise the processes in various ways and help us think of ways to change the behaviour of an LLM without ever having to retrain it. For example, if lawyers couldn’t use an LLM that isn’t trustworthy enough to &lt;i&gt;always&lt;/i&gt; output the correct answer as per the context, what if studying these attention weights and changing them in some way could force the LLM to stick to the context in a much more trustworthy fashion? Even if it’s not simple, we might get there soon.&lt;/p&gt;
+
+&lt;h4 id=&quot;acknowledgements&quot;&gt;Acknowledgements&lt;/h4&gt;
+
+&lt;p&gt;The contents of this blog are from the paper &lt;a href=&quot;https://arxiv.org/abs/2406.12824&quot;&gt;From RAGs to rich parameters: Probing how language models utilise external knowledge over parametric information for factual queries&lt;/a&gt; by Hitesh Wadhwa et al. All diagrams were made using Canva.&lt;/p&gt;
+</description>
+        <pubDate>Sat, 28 Sep 2024 00:00:00 +0530</pubDate>
+        <link>http://localhost:4000/RAG/</link>
+        <guid isPermaLink="true">http://localhost:4000/RAG/</guid>
+        
+        
+        <category>review</category>
+        
+      </item>
     
       <item>
         <title>Where are facts stored in Large Language Models?</title>
@@ -16,6 +221,12 @@
 &lt;p&gt;In 2022, Kevin Meng et al. wrote the paper &lt;a href=&quot;https://arxiv.org/abs/2202.05262&quot;&gt;Locating and Editing Factual Associations in GPT&lt;/a&gt;, detailing a method to identify where facts might be stored in LLMs and utilising this information to edit the facts in LLMs without any extra training. Note that training requires extensive GPU resources, so if we could edit facts just by changing a few weights, it would be faster and more resource-efficient.&lt;/p&gt;
 
 &lt;p&gt;In this blog, we’ll go over how a method called causal mediation analysis is applied to LLMs to locate the fact storage sites in an LLM.&lt;/p&gt;
+
+&lt;div style=&quot;border-left: 4px solid gray; background-color: #EAEAEA; padding: 10px; margin-bottom: 16px; font-size: 17px; text-align: center&quot;&gt;
+    &lt;i&gt;
+        &lt;a href=&quot;https://medium.com/@nikhilanandnj/where-are-facts-stored-in-large-language-models-0869914cfcbf&quot; target=&quot;_blank&quot;&gt;READ THE FULL ARTICLE ON MEDIUM&lt;/a&gt;
+    &lt;/i&gt;
+&lt;/div&gt;
 
 &lt;h3 id=&quot;a-recap-of-llm-architecture&quot;&gt;A Recap of LLM Architecture&lt;/h3&gt;
 
