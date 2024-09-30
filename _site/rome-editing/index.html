@@ -265,17 +265,17 @@
                 <!-- Toc if any -->
                 
                 <!-- End Toc -->
-                <p>Brian Niccol became the CEO of Starbucks a few weeks ago. Unfortunately, our LLMs were trained much before this, so they might still think the CEO is Kevin Johnson. That begs the question, “How do we change facts in LLMs without retraining them every time?”, or perhaps an even deeper question, “Where are facts even stored in LLMs?”</p>
-
-<p>In 2022, Kevin Meng et al. wrote the paper <a href="https://arxiv.org/abs/2202.05262">Locating and Editing Factual Associations in GPT</a>, detailing a method to identify where facts might be stored in LLMs and utilising this information to edit the facts in LLMs without any extra training. Note that training requires extensive GPU resources, so if we could edit facts just by changing a few weights, it would be faster and more resource-efficient.</p>
-
-<p>In this blog, we’ll go over how a method called causal mediation analysis is applied to LLMs to locate the fact storage sites in an LLM.</p>
-
-<div style="border-left: 4px solid gray; background-color: #EAEAEA; padding: 10px; margin-bottom: 16px; font-size: 17px; text-align: center">
+                <div style="border-left: 4px solid gray; background-color: #EAEAEA; padding: 10px; margin-bottom: 16px; font-size: 17px; text-align: center">
     <i>
         <a href="https://medium.com/@nikhilanandnj/where-are-facts-stored-in-large-language-models-0869914cfcbf" target="_blank">READ THE FULL ARTICLE ON MEDIUM</a>
     </i>
 </div>
+
+<p>Brian Niccol became the CEO of Starbucks a few weeks ago. Unfortunately, our LLMs were trained much before this, so they might still think the CEO is Kevin Johnson. That begs the question, “How do we change facts in LLMs without retraining them every time?”, or perhaps an even deeper question, “Where are facts even stored in LLMs?”</p>
+
+<p>In 2022, Kevin Meng et al. wrote the paper <a href="https://arxiv.org/abs/2202.05262">Locating and Editing Factual Associations in GPT</a>, detailing a method to identify where facts might be stored in LLMs and utilising this information to edit the facts in LLMs without any extra training. Note that training requires extensive GPU resources, so if we could edit facts just by changing a few weights, it would be faster and more resource-efficient.</p>
+
+<p>In this blog, we’ll go over how a method called causal mediation analysis is applied to LLMs to locate the fact storage sites in an LLM.</p>
 
 <h3 id="a-recap-of-llm-architecture">A Recap of LLM Architecture</h3>
 
