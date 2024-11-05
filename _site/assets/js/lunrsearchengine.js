@@ -8,7 +8,7 @@ var documents = [{
     "id": 1,
     "url": "http://localhost:4000/about",
     "title": "",
-    "body": "   Hi! I'm Nikhil, a student at IIT Madras. I'm interested in AI Research, and I was fortunate to do an internship at Adobe Research in 2024 in the NLP team. I will join full-time as a Research Associate in 2025.   I'm doing my undergrad at IIT Madras (BTech in Bioengineering and MTech in Data Science). During my internship at Adobe Research, I worked on using the internal states of LLMs to make them more faithful to the provided context, which I will be continuing for my final year thesis.   In my free time, I love to read, play the guitar, and sing. I also play tennis and swim.                     "
+    "body": "   Hi! I'm Nikhil, a student at IIT Madras. I'm interested in AI Research, and I was fortunate to do an internship at Adobe Research in 2024 in the NLP team. I will join full-time as a Research Associate in 2025.   I'm doing my undergrad at IIT Madras (BTech in Bioengineering and MTech in Data Science). During my internship at Adobe Research, I worked on using the internal states of LLMs to make them more faithful to the provided context, which I will be continuing for my final year thesis.   In my free time, I love to read, play the guitar, and sing. I also play tennis and swim.                      "
     }, {
     "id": 2,
     "url": "http://localhost:4000/blogs",

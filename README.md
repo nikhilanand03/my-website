@@ -1,11 +1,12 @@
-# Mediumish - Jekyll Theme
+# Blog Site
 
-[Live Demo](https://wowthemesnet.github.io/mediumish-theme-jekyll/) &nbsp; | &nbsp; [Download](https://github.com/wowthemesnet/mediumish-theme-jekyll/archive/master.zip) &nbsp; | &nbsp; [Documentation](https://bootstrapstarter.com/template-mediumish-bootstrap-jekyll/) &nbsp; | &nbsp; [Buy me a coffee](https://www.wowthemes.net/donate/)
+<!-- [Live Demo](https://wowthemesnet.github.io/mediumish-theme-jekyll/) &nbsp; | &nbsp; [Download](https://github.com/wowthemesnet/mediumish-theme-jekyll/archive/master.zip) &nbsp; | &nbsp; [Documentation](https://bootstrapstarter.com/template-mediumish-bootstrap-jekyll/) &nbsp; | &nbsp; [Buy me a coffee](https://www.wowthemes.net/donate/)
 
-![mediumish](assets/images/mediumish-jekyll-template.png)
+![mediumish](assets/images/mediumish-jekyll-template.png) -->
 
+![Visitor Count](https://profile-counter.glitch.me/nikhilanand03/count.svg)
 
-### Copyright
+<!-- ### Copyright
 
 Copyright (C) 2019 Sal, https://www.wowthemes.net
 
@@ -20,4 +21,4 @@ Copyright (C) 2019 Sal, https://www.wowthemes.net
 3. Create a branch off of master and give it a meaningful name (e.g. my-new-mediumish-feature).
 4. Make necessary changes, commit, push and open a pull request on GitHub.
 
-Thank you!
+Thank you! -->
